@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sistema de Notas</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #f44336; color: white; }
+        .container { max-width: 800px; margin: 0 auto; }
+        input, button { padding: 10px; margin: 5px; }
+        .resultado { background: rgba(0,0,0,0.2); padding: 15px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Notas - Carlos</h1>
+        
+        <h3>Adicionar Aluno:</h3>
+        <input id="nome" placeholder="Nome" />
+        <input id="nota1" placeholder="Nota 1" type="number" />
+        <input id="nota2" placeholder="Nota 2" type="number" />
+        <input id="nota3" placeholder="Nota 3" type="number" />
+        <input id="nota4" placeholder="Nota 4" type="number" />
+        <input id="nota5" placeholder="Nota 5" type="number" />
+        <input id="freq" placeholder="Frequência %" type="number" />
+        <button onclick="adicionarAluno()">Adicionar</button>
+        
+        <button onclick="calcular()">Calcular Resultados</button>
+        
+        <div id="resultados" class="resultado"></div>
+    </div>
+
+    <script>
+        let alunos = [];
+        
+        function adicionarAluno() {
+            const nome = document.getElementById('nome').value;
+            const notas = [1,2,3,4,5].map(i => parseFloat(document.getElementById('nota'+i).value));
+            const freq = parseFloat(document.getElementById('freq').value);
+            
+            alunos.push({nome, notas, freq, media: notas.reduce((a,b)=>a+b)/5});
+            
+            document.getElementById('nome').value = '';
+            [1,2,3,4,5].forEach(i => document.getElementById('nota'+i).value = '');
+            document.getElementById('freq').value = '';
+            
+            alert('Aluno adicionado: ' + nome);
+        }
+        
+        function calcular() {
+            if (alunos.length === 0) return;
+            
+            let resultado = '<h3>Resultados:</h3>';
+            
+            // alunos
+            alunos.forEach(a => {
+                resultado += `${a.nome} ${a.media.toFixed(0)} ${a.freq.toFixed(0)}%<br>`;
+            });
+            
+            // media disciplina
+            const mediaTurma = [];
+            for (let i = 0; i < 5; i++) {
+                const soma = alunos.reduce((s, a) => s + a.notas[i], 0);
+                mediaTurma.push((soma / alunos.length).toFixed(0));
+            }
+            resultado += `<br>Médias da turma: ${mediaTurma.join(' ')}<br><br>`;
+            
+            // media alta
+            const mediaGeral = alunos.reduce((s, a) => s + a.media, 0) / alunos.length;
+            const acimaMedia = alunos.filter(a => a.media > mediaGeral);
+            resultado += 'Alunos acima da média:<br>';
+            acimaMedia.forEach(a => resultado += a.nome + '<br>');
+            
+            //frequencia 
+            const freqBaixa = alunos.filter(a => a.freq < 75);
+            resultado += '<br>Alunos com frequência < 75%:<br>';
+            freqBaixa.forEach(a => resultado += a.nome + '<br>');
+            
+            document.getElementById('resultados').innerHTML = resultado;
+        }
+    </script>
+</body>
+</html>
